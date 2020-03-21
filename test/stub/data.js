@@ -136,6 +136,21 @@ function writeDefaultConfiguration() {
             '0x90fd9ffffe4b64ax': {
                 friendly_name: 'ZNLDP12LM',
             },
+            '0x90fd9ffffe4b64aa': {
+                friendly_name: 'SP600_OLD',
+            },
+            '0x90fd9ffffe4b64ab': {
+                friendly_name: 'SP600_NEW',
+            },
+            '0x90fd9ffffe4b64ac': {
+                friendly_name: 'MKS-CM-W5',
+            },
+            '0x0017880104e45526': {
+                friendly_name: 'GL-S-007ZS',
+            },
+            '0x0017880104e43559': {
+                friendly_name: 'U202DST600ZB'
+            },
         },
         groups: {
             '1': {

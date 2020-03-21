@@ -464,6 +464,18 @@ describe('Settings', () => {
         }).toThrow(new Error("Device '0x123' already exists"));
     });
 
+    it('Should not allow retention configuration without MQTT v5', () => {
+        write(configurationFile, {
+            devices: {'0x0017880104e45519': {friendly_name: 'tain', retention: 900}},
+        });
+
+        settings._reRead();
+
+        expect(() => {
+            settings.validate();
+        }).toThrowError('MQTT retention requires protocol version 5');
+    });
+
     it('Should ban devices', () => {
         write(configurationFile, {});
         settings.banDevice('0x123');
@@ -512,6 +524,18 @@ describe('Settings', () => {
         }).toThrowError(`Duplicate friendly_name 'myname' found`);
     });
 
+    it('Configuration shouldnt be valid when friendly_name ends with /DIGIT', async () => {
+        write(configurationFile, {
+            devices: {'0x0017880104e45519': {friendly_name: 'myname/123', retain: false}},
+        });
+
+        settings._reRead();
+
+        expect(() => {
+            settings.validate();
+        }).toThrowError(`Friendly name cannot end with a "/DIGIT" ('myname/123')`);
+    });
+
     it('Configuration shouldnt be valid when friendly_name is a postfix', async () => {
         write(configurationFile, {
             devices: {'0x0017880104e45519': {friendly_name: 'left', retain: false}},
@@ -537,6 +561,21 @@ describe('Settings', () => {
         expect(() => {
             settings.changeFriendlyName('myname1', 'myname');
         }).toThrowError(`friendly_name 'myname' is already in use`);
+    });
+
+    it('Should throw when removing device which doesnt exist', async () => {
+        write(configurationFile, {
+            devices: {
+                '0x0017880104e45519': {friendly_name: 'myname', retain: false},
+                '0x0017880104e45511': {friendly_name: 'myname1', retain: false}
+            },
+        });
+
+        settings._reRead();
+
+        expect(() => {
+            settings.removeDevice('myname33');
+        }).toThrowError(`Device 'myname33' does not exist`);
     });
 
     it('Shouldnt write to configuration.yaml when there are no changes in it', () => {
